@@ -13,14 +13,6 @@ const mockChunks = [
   { id: "c5", choices: [{ delta: { content: "Do you need a forecast for the week?" }, finish_reason: "stop" }] },
 ];
 
-
-const followUpChunks = [
-  { id: "f1", choices: [{ delta: { content: "Sure! " }, finish_reason: null }] },
-  { id: "f2", choices: [{ delta: { content: "This week's forecast shows mostly sunny days " }, finish_reason: null }] },
-  { id: "f3", choices: [{ delta: { content: "with occasional rain showers on Thursday. " }, finish_reason: null }] },
-  { id: "f4", choices: [{ delta: { content: "Let me know if you'd like recommendations for outdoor activities!" }, finish_reason: "stop" }] },
-];
-
 export default function App() {
   const [mockMessages, setMockMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -78,29 +70,7 @@ export default function App() {
     simulateStreamingResponse(mockChunks, (delta, isFinal) => {
       aiContent += delta;
       setMockMessages([userMessage, { type: "ai", content: aiContent, id: "ai-1" }]);
-
-      if (isFinal) {
-        setTimeout(() => {
-          let followUpContent = "";
-        
-          simulateStreamingResponse(followUpChunks, (delta2, isFinal2) => {
-            followUpContent += delta2;
-        
-            setMockMessages([
-              userMessage,
-              { type: "ai", content: aiContent, id: "ai-1" },
-              { type: "human", content: "Yes, please give me the weekly forecast.", id: "user-2" },
-              {
-                type: "ai",
-                content: followUpContent,
-                id: "ai-2",
-              },
-            ]);
-        
-            if (isFinal2) setIsLoading(false);
-          }, 1000);
-        }, 1500);
-      }
+      if (isFinal) setIsLoading(false);
     });
   }, []);
 
